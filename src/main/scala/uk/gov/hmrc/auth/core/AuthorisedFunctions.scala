@@ -17,13 +17,13 @@
 package uk.gov.hmrc.auth.core
 
 
-import uk.gov.hmrc.play.http.HeaderCarrier
+import play.api.mvc.Request
+import uk.gov.hmrc.play.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
 trait AuthorisedFunctions {
-
 
   def authConnector: AuthConnector
 
@@ -35,8 +35,10 @@ trait AuthorisedFunctions {
 
   class AuthorisedFunction(predicate: Predicate) {
 
-    def apply[A](body: => Future[A])(implicit hc: HeaderCarrier): Future[A] =
+    def apply[A](body: => Future[A])(implicit request: Request[_], hc: HeaderCarrier): Future[A] = {
+      implicit val otacToken = OtacToken.from(request.session)
       authConnector.authorise(predicate, EmptyRetrieval).flatMap(_ => body)
+    }
 
 
     def retrieve[A](retrieval: Retrieval[A]) = new AuthorisedFunctionWithResult(predicate, retrieval)
@@ -46,10 +48,10 @@ trait AuthorisedFunctions {
 
   class AuthorisedFunctionWithResult[A](predicate: Predicate, retrieval: Retrieval[A]) {
 
-    def apply[B](body: A => Future[B])(implicit hc: HeaderCarrier): Future[B] =
+    def apply[B](body: A => Future[B])(implicit request: Request[_], hc: HeaderCarrier): Future[B] = {
+      implicit val otacToken = OtacToken.from(request.session)
       authConnector.authorise(predicate, retrieval).flatMap(body)
+    }
 
   }
-
-
 }

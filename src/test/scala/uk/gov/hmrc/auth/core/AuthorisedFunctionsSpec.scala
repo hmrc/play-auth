@@ -19,6 +19,7 @@ package uk.gov.hmrc.auth.core
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec
 import org.scalatest.concurrent.ScalaFutures
+import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.{Bar, Foo, TestPredicate1}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -31,13 +32,14 @@ class AuthorisedFunctionsSpec extends WordSpec with ScalaFutures {
   private trait Setup extends AuthorisedFunctions {
 
     implicit lazy val hc = HeaderCarrier()
+    implicit val request = FakeRequest()
 
     def success: Any = ()
 
     def exception: Option[AuthorisationException] = None
 
     val authConnector: AuthConnector = new AuthConnector {
-      def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit hc: HeaderCarrier): Future[A] = {
+      def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit otacToken: OtacToken, hc: HeaderCarrier): Future[A] = {
         exception.fold(Future.successful(success.asInstanceOf[A]))(Future.failed(_))
       }
     }

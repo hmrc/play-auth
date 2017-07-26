@@ -204,6 +204,11 @@ object Credentials {
 
 case class LoginTimes(currentLogin: DateTime, previousLogin: Option[DateTime])
 
+case class Otac(serviceName: String) extends Predicate {
+  override def toJson: JsValue = Json.obj("otacServiceName" -> serviceName)
+}
+
+
 object Retrievals {
 
   import uk.gov.hmrc.play.controllers.RestFormats.dateTimeRead

@@ -65,7 +65,7 @@ class AuthorisationFilterSpec extends WordSpec with ScalaFutures {
       val config = FilterConfig(ConfigFactory.parseString(fullConfig).getConfig("controllers"))
 
       val connector: AuthConnector = new AuthConnector {
-        def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit hc: HeaderCarrier): Future[A] = {
+        def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit otacToken: OtacToken, hc: HeaderCarrier): Future[A] = {
           predicate match {
             case RawJsonPredicate(value) => predicateJson = value
             case _ => ()

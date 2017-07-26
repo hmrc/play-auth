@@ -34,6 +34,7 @@ class AuthConnectorSpec extends WordSpec with ScalaFutures {
   private trait Setup {
 
     implicit lazy val hc = HeaderCarrier()
+    implicit val otacToken = NoOtacToken
 
     def withStatus: Int = Status.OK
 

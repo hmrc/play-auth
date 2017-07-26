@@ -19,7 +19,7 @@ package uk.gov.hmrc.auth.filter
 import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.{Filter, RequestHeader, Result, Results}
 import play.api.routing.Router.Tags
-import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisationException, EmptyRetrieval, RawJsonPredicate}
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
@@ -55,6 +55,7 @@ trait AuthorisationFilter extends Filter {
         applyConfig(configs.tail)
       ) { resolvedPathVariables =>
         val parsedJson = prepareJson(configs.head, resolvedPathVariables)
+        implicit val otacToken = OtacToken.from(rh.session)
         connector
           .authorise(RawJsonPredicate(parsedJson), EmptyRetrieval).flatMap(_ => next(rh))
           .recover { case _: AuthorisationException => Results.Unauthorized }

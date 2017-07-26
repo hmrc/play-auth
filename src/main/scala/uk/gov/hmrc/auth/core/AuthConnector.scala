@@ -18,6 +18,7 @@ package uk.gov.hmrc.auth.core
 
 import play.api.http.{HeaderNames => PlayHeaderNames}
 import play.api.libs.json._
+import play.api.mvc.Session
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
@@ -25,7 +26,7 @@ import scala.concurrent.Future
 
 trait AuthConnector {
 
-  def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit hc: HeaderCarrier): Future[A]
+  def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit otacToken: OtacToken, hc: HeaderCarrier): Future[A]
 
 }
 
@@ -35,7 +36,7 @@ trait PlayAuthConnector extends AuthConnector {
 
   def http: HttpPost
 
-  def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit hc: HeaderCarrier): Future[A] = {
+  def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit otacToken: OtacToken, hc: HeaderCarrier): Future[A] = {
 
     // if the predicate is a single field (1x SimplePredicate), place it into an array
     val predicateJson = predicate.toJson match {
@@ -46,7 +47,7 @@ trait PlayAuthConnector extends AuthConnector {
       "authorise" -> predicateJson,
       "retrieve" -> JsArray(retrieval.propertyNames.map(JsString))
     )
-    http.POST(s"$serviceUrl/auth/authorise", json) map {
+    http.POST(s"$serviceUrl/auth/authorise", json, otacToken.headers) map {
       _.json match {
         case null => JsNull.as[A](retrieval.reads)
         case bdy => bdy.as[A](retrieval.reads)
@@ -71,4 +72,21 @@ object AuthenticateHeaderParser {
     }
   }
 
+}
+
+sealed trait OtacToken {
+  def headers: Seq[(String, String)]
+}
+
+case class PresentOtacToken(token: String) extends OtacToken {
+  override def headers = Seq(HeaderNames.otacAuthorization -> token)
+}
+
+case object NoOtacToken extends OtacToken {
+  override def headers = Seq.empty
+}
+
+object OtacToken {
+  def from(session: Session) =
+    session.get(SessionKeys.otacToken).map(PresentOtacToken(_)).getOrElse(NoOtacToken)
 }
