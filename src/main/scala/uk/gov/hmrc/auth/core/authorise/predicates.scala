@@ -154,4 +154,7 @@ object CredentialRole {
 
   case object Assistant extends CredentialRole
 
+  private val mapping = Mappings.mapEnum[CredentialRole](Admin, Assistant)
+
+  implicit val jsonFormat = mapping.jsonFormat
 }
