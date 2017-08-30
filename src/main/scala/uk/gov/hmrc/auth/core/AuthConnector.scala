@@ -58,7 +58,6 @@ trait PlayAuthConnector extends AuthConnector {
         Future.failed(AuthenticateHeaderParser.parse(headers))
     }
   }
-
 }
 
 object AuthenticateHeaderParser {

@@ -18,7 +18,7 @@ package uk.gov.hmrc.auth.core.retrieve
 
 import org.joda.time.{DateTime, LocalDate}
 import play.api.libs.json._
-import uk.gov.hmrc.auth.core.authorise.{AffinityGroup, Enrolment, Enrolments, Predicate}
+import uk.gov.hmrc.auth.core.authorise.{AffinityGroup, CredentialRole, Enrolment, Enrolments, Predicate}
 
 object Retrievals {
 
@@ -44,7 +44,7 @@ object Retrievals {
   val description: Retrieval[Option[String]] = OptionalRetrieval("description", Reads.StringReads)
   val agentInformation: Retrieval[AgentInformation] = SimpleRetrieval("agentInformation", AgentInformation.reads)
   val groupIdentifier: Retrieval[Option[String]] = OptionalRetrieval("groupIdentifier", Reads.StringReads)
-  val credentialRole: Retrieval[Option[CredentialRole]] = OptionalRetrieval("credentialRole", CredentialRole.reads)
+  val credentialRole: Retrieval[Option[CredentialRole]] = OptionalRetrieval("credentialRole", CredentialRole.jsonFormat)
 
   val allUserDetails = credentials and name and dateOfBirth and postCode and email and
     affinityGroup and agentCode and agentInformation and credentialRole and
@@ -127,23 +127,6 @@ object LegacyCredentials {
 }
 
 case class LoginTimes(currentLogin: DateTime, previousLogin: Option[DateTime])
-
-sealed trait CredentialRole
-
-object Admin extends CredentialRole
-
-object Assistant extends CredentialRole
-
-object CredentialRole {
-  val reads: Reads[CredentialRole] = new Reads[CredentialRole] {
-    override def reads(json: JsValue): JsResult[CredentialRole] =
-      json.as[String].toLowerCase match {
-        case "admin" => JsSuccess(Admin)
-        case "assistant" => JsSuccess(Assistant)
-        case value => JsError("Unsupported credential role value: " + value)
-      }
-  }
-}
 
 case class AgentInformation(agentId: Option[String],
                             agentCode: Option[String],
