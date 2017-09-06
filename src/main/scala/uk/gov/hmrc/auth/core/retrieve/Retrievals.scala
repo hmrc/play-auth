@@ -35,6 +35,8 @@ object Retrievals {
   val allEnrolments: Retrieval[Enrolments] = SimpleRetrieval("allEnrolments", Reads.set[Enrolment].map(Enrolments))
   val authorisedEnrolments: Retrieval[Enrolments] = SimpleRetrieval("authorisedEnrolments", Reads.set[Enrolment].map(Enrolments))
   val authProviderId: Retrieval[LegacyCredentials] = SimpleRetrieval("authProviderId", LegacyCredentials.reads)
+  val mdtpInformation: Retrieval[Option[MdtpInformation]] = OptionalRetrieval("mdtpInformation", MdtpInformation.reads)
+  val gatewayInformation: Retrieval[Option[GatewayInformation]] = OptionalRetrieval("gatewayInformation", GatewayInformation.reads)
 
   val credentials: Retrieval[Credentials] = SimpleRetrieval("credentials", Credentials.reads)
   val name: Retrieval[Name] = SimpleRetrieval("name", Name.reads)
@@ -157,3 +159,12 @@ object ItmpAddress {
   val reads = Json.reads[ItmpAddress]
 }
 
+case class MdtpInformation(deviceId: String, sessionId: String)
+object MdtpInformation {
+  val reads = Json.reads[MdtpInformation]
+}
+
+case class GatewayInformation(gatewayToken: Option[String], unreadMessageCount: Option[String])
+object GatewayInformation {
+  val reads = Json.reads[GatewayInformation]
+}
