@@ -3,6 +3,7 @@ play-auth
 [![Build Status](https://travis-ci.org/hmrc/play-auth.svg)](https://travis-ci.org/hmrc/play-auth) [ ![Download](https://api.bintray.com/packages/hmrc/releases/play-auth/images/download.svg) ](https://bintray.com/hmrc/releases/play-auth/_latestVersion) [![Apache-2.0 license](http://img.shields.io/badge/license-Apache-brightgreen.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 Library for supporting user authorisation on microservices.
+Note: If you're using frontend-bootstrap 8.0.0+ or microservice-bootstrap 6.0.0+, you should use https://github.com/hmrc/auth-client instead.
 
 ## Installing
  
