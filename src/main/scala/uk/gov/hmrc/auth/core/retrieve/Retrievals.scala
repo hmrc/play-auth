@@ -37,6 +37,7 @@ object Retrievals {
   val authProviderId: Retrieval[LegacyCredentials] = SimpleRetrieval("authProviderId", LegacyCredentials.reads)
   val mdtpInformation: Retrieval[Option[MdtpInformation]] = OptionalRetrieval("mdtpInformation", MdtpInformation.reads)
   val gatewayInformation: Retrieval[Option[GatewayInformation]] = OptionalRetrieval("gatewayInformation", GatewayInformation.reads)
+  val unreadMessageCount: Retrieval[Option[Int]] = OptionalRetrieval("unreadMessageCount", Reads.IntReads)
 
   val credentials: Retrieval[Credentials] = SimpleRetrieval("credentials", Credentials.reads)
   val name: Retrieval[Name] = SimpleRetrieval("name", Name.reads)
@@ -50,7 +51,7 @@ object Retrievals {
 
   val allUserDetails = credentials and name and dateOfBirth and postCode and email and
     affinityGroup and agentCode and agentInformation and credentialRole and
-    description and groupIdentifier
+    description and groupIdentifier and unreadMessageCount
 
   val itmpName: Retrieval[ItmpName] = SimpleRetrieval("itmpName", ItmpName.reads)
   val itmpDateOfBirth: Retrieval[Option[LocalDate]] = OptionalRetrieval("itmpDateOfBirth", localDateRead)
