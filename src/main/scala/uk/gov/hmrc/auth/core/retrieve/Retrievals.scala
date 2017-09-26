@@ -165,7 +165,7 @@ object MdtpInformation {
   val reads = Json.reads[MdtpInformation]
 }
 
-case class GatewayInformation(gatewayToken: Option[String], unreadMessageCount: Option[Int])
+case class GatewayInformation(gatewayToken: Option[String])
 object GatewayInformation {
   val reads = Json.reads[GatewayInformation]
 }
