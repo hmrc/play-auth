@@ -1,25 +1,25 @@
 import sbt.Keys._
 import sbt._
+import uk.gov.hmrc.{SbtArtifactory, SbtAutoBuildPlugin}
+import uk.gov.hmrc.versioning.SbtGitVersioning
+import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 object HmrcBuild extends Build {
-
-  import uk.gov.hmrc._
-  import uk.gov.hmrc.versioning.SbtGitVersioning
 
   val appName = "play-auth"
 
   lazy val library = Project(appName, file("."))
-    .enablePlugins(SbtAutoBuildPlugin, SbtGitVersioning)
+    .enablePlugins(SbtAutoBuildPlugin, SbtGitVersioning, SbtArtifactory)
     .settings(
       name := appName,
       scalaVersion := "2.11.7",
       crossScalaVersions := Seq("2.11.7"),
       libraryDependencies ++= BuildDependencies(),
-      resolvers := Seq(
-        Resolver.bintrayRepo("hmrc", "releases"),
-        "typesafe-releases" at "http://repo.typesafe.com/typesafe/releases/"
-      ),
       Developers()
+    )
+    .settings(majorVersion := 2)
+    .settings(resolvers += Resolver.bintrayRepo("hmrc", "releases"),
+      resolvers += "hmrc-releases" at "https://artefacts.tax.service.gov.uk/artifactory/hmrc-releases/"
     )
 }
 
