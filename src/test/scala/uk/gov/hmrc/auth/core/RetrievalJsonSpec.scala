@@ -211,7 +211,6 @@ class RetrievalJsonSpec extends WordSpec with ScalaFutures {
       Retrievals.authorisedEnrolments.reads.reads(json).get shouldBe Enrolments(enrolments)
     }
 
-
   }
 
   "The JSON reads for multiple retrievals" should {
@@ -238,6 +237,5 @@ class RetrievalJsonSpec extends WordSpec with ScalaFutures {
     }
 
   }
-
 
 }

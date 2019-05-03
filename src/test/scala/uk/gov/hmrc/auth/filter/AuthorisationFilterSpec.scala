@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.auth.filter
 
-import akka.stream.Materializer
+import akka.actor.ActorSystem
+import akka.stream.{ActorMaterializer, Materializer}
 import com.typesafe.config.ConfigFactory
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec
@@ -29,7 +30,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.{Predicate, RawJsonPredicate}
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -46,30 +47,30 @@ class AuthorisationFilterSpec extends WordSpec with ScalaFutures {
   }
 
   trait Authorised {
-    val expectedStatus = Status.OK
+    val expectedStatus: Int = Status.OK
   }
 
   trait Unauthorised {
-    val expectedStatus = Status.UNAUTHORIZED
+    val expectedStatus: Int = Status.UNAUTHORIZED
   }
 
 
   private trait Setup extends ConfigSetup {
 
-    implicit lazy val hc = HeaderCarrier()
+    implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
     def connectorSuccess: Boolean
 
     var predicateJson: JsValue = JsNull
 
-    val filter = new AuthorisationFilter {
+    val filter: AuthorisationFilter = new AuthorisationFilter {
 
       val config = FilterConfig(ConfigFactory.parseString(fullConfig).getConfig("controllers"))
 
       val connector: AuthConnector = new AuthConnector {
         def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit hc: HeaderCarrier): Future[A] = {
           predicate match {
-            case RawJsonPredicate(value) => predicateJson = value
+            case RawJsonPredicate(data) => predicateJson = data
             case _ => ()
           }
           if (connectorSuccess) Future.successful(retrieval.reads.reads(Json.obj()).get) // always EmptyRetrieval
@@ -77,7 +78,9 @@ class AuthorisationFilterSpec extends WordSpec with ScalaFutures {
         }
       }
 
-      override implicit def mat: Materializer = ???
+      implicit val system: ActorSystem = ActorSystem()
+
+      override implicit def mat: Materializer = ActorMaterializer()
     }
 
     def path: String
@@ -137,7 +140,6 @@ class AuthorisationFilterSpec extends WordSpec with ScalaFutures {
 
       Json.stringify(predicateJson) shouldBe """[{"enrolment":"ENROL-1","identifiers":[{"key":"BOO","value":"12345"}]}]"""
     }
-
 
   }
 

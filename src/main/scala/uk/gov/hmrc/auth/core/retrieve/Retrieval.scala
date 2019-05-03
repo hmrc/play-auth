@@ -60,7 +60,7 @@ trait Retrieval[A] {
 case class CompositeRetrieval[A, B](retrievalA: Retrieval[A], retrievalB: Retrieval[B])
   extends Retrieval[A ~ B] {
 
-  val propertyNames = retrievalA.propertyNames ++ retrievalB.propertyNames
+  val propertyNames: Seq[String] = retrievalA.propertyNames ++ retrievalB.propertyNames
 
   lazy val reads: Reads[A ~ B] = (retrievalA.reads and retrievalB.reads) {
     (a, b) => new ~(a, b)
@@ -85,7 +85,7 @@ object EmptyRetrieval extends Retrieval[Unit] {
   */
 case class SimpleRetrieval[A](propertyName: String, valueReads: Reads[A]) extends Retrieval[A] {
   val reads: Reads[A] = (JsPath \ propertyName).read[A](valueReads)
-  val propertyNames = Seq(propertyName)
+  val propertyNames: Seq[String] = Seq(propertyName)
 }
 
 /**
@@ -96,5 +96,5 @@ case class SimpleRetrieval[A](propertyName: String, valueReads: Reads[A]) extend
   */
 case class OptionalRetrieval[A](propertyName: String, valueReads: Reads[A]) extends Retrieval[Option[A]] {
   val reads: Reads[Option[A]] = (JsPath \ propertyName).readNullable[A](valueReads)
-  val propertyNames = Seq(propertyName)
+  val propertyNames: Seq[String] = Seq(propertyName)
 }

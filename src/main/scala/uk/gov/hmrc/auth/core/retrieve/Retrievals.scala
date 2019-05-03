@@ -19,11 +19,10 @@ package uk.gov.hmrc.auth.core.retrieve
 import org.joda.time.{DateTime, LocalDate}
 import play.api.libs.json._
 import uk.gov.hmrc.auth.core.authorise.{AffinityGroup, CredentialRole, Enrolment, Enrolments, Predicate}
+import uk.gov.hmrc.http.controllers.RestFormats.dateTimeRead
+import uk.gov.hmrc.http.controllers.RestFormats.localDateRead
 
 object Retrievals {
-
-  import uk.gov.hmrc.play.controllers.RestFormats.dateTimeRead
-  import uk.gov.hmrc.play.controllers.RestFormats.localDateRead
 
   val internalId: Retrieval[Option[String]] = OptionalRetrieval("internalId", Reads.StringReads)
   val externalId: Retrieval[Option[String]] = OptionalRetrieval("externalId", Reads.StringReads)
@@ -81,25 +80,25 @@ case class AuthProviders(providers: AuthProvider*) extends Predicate {
 case class Credentials(providerId: String, providerType: String)
 
 object Credentials {
-  implicit val reads = Json.reads[Credentials]
+  implicit val reads: Reads[Credentials] = Json.reads[Credentials]
 }
 
 case class Name(name: Option[String], lastName: Option[String])
 
 object Name {
-  implicit val reads = Json.reads[Name]
+  implicit val reads: Reads[Name] = Json.reads[Name]
 }
 
 case class PostCode(value: String)
 
 object PostCode {
-  implicit val reads = Json.reads[PostCode]
+  implicit val reads: Reads[PostCode] = Json.reads[PostCode]
 }
 
 case class Email(value: String)
 
 object Email {
-  implicit val reads = Json.reads[Email]
+  implicit val reads: Reads[Email] = Json.reads[Email]
 }
 
 trait LegacyCredentials
@@ -136,7 +135,7 @@ case class AgentInformation(agentId: Option[String],
                             agentFriendlyName: Option[String])
 
 object AgentInformation {
-  val reads = Json.reads[AgentInformation]
+  val reads: Reads[AgentInformation] = Json.reads[AgentInformation]
 }
 
 case class ItmpName(givenName: Option[String],
@@ -144,7 +143,7 @@ case class ItmpName(givenName: Option[String],
                     familyName: Option[String])
 
 object ItmpName {
-  val reads = Json.reads[ItmpName]
+  val reads: Reads[ItmpName] = Json.reads[ItmpName]
 }
 
 case class ItmpAddress(line1: Option[String],
@@ -157,15 +156,15 @@ case class ItmpAddress(line1: Option[String],
                        countryCode: Option[String])
 
 object ItmpAddress {
-  val reads = Json.reads[ItmpAddress]
+  val reads: Reads[ItmpAddress] = Json.reads[ItmpAddress]
 }
 
 case class MdtpInformation(deviceId: String, sessionId: String)
 object MdtpInformation {
-  val reads = Json.reads[MdtpInformation]
+  val reads: Reads[MdtpInformation] = Json.reads[MdtpInformation]
 }
 
 case class GatewayInformation(gatewayToken: Option[String])
 object GatewayInformation {
-  val reads = Json.reads[GatewayInformation]
+  val reads: Reads[GatewayInformation] = Json.reads[GatewayInformation]
 }

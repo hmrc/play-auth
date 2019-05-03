@@ -31,11 +31,11 @@ class RedirectsSpec extends WordSpec with ScalaFutures with Matchers {
 
 
   trait Dev {
-    val mode = Mode.Dev
+    val mode: Mode.Value = Mode.Dev
   }
 
   trait Prod {
-    val mode = Mode.Prod
+    val mode: Mode.Value = Mode.Prod
   }
 
   trait BaseUri {
@@ -60,7 +60,7 @@ class RedirectsSpec extends WordSpec with ScalaFutures with Matchers {
 
       val env = Environment(new File("."), getClass.getClassLoader, mode)
 
-      val config = Configuration.from(Map(
+      val config: Configuration = Configuration.from(Map(
         "appName" -> "app",
         "run.mode" -> mode.toString
       ) ++ extraConfig)
@@ -145,7 +145,7 @@ class RedirectsSpec extends WordSpec with ScalaFutures with Matchers {
 
     "allow to override the host defaults" in new Setup with Dev {
 
-      override def extraConfig = Map("Dev.external-url.company-auth-frontend.host" -> "http://localhost:9999")
+      override def extraConfig: Map[String, String] = Map("Dev.external-url.company-auth-frontend.host" -> "http://localhost:9999")
 
       val expectedLocation = s"http://localhost:9999$ggLoginPath?continue=%2Fcontinue&origin=app"
 
@@ -155,7 +155,7 @@ class RedirectsSpec extends WordSpec with ScalaFutures with Matchers {
 
     "allow to override the origin default in configuration" in new Setup with Dev {
 
-      override def extraConfig = Map("sosOrigin" -> "customOrigin")
+      override def extraConfig: Map[String, String] = Map("sosOrigin" -> "customOrigin")
 
       val expectedLocation = s"$ggLoginService$ggLoginPath?continue=%2Fcontinue&origin=customOrigin"
 
@@ -174,8 +174,6 @@ class RedirectsSpec extends WordSpec with ScalaFutures with Matchers {
       validate(CustomRedirect.toGGLogin("/continue"))
 
     }
-
   }
-
 
 }

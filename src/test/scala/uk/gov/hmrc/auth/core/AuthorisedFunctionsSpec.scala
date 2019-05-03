@@ -22,7 +22,7 @@ import org.scalatest.concurrent.ScalaFutures
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, SimpleRetrieval, ~}
 import uk.gov.hmrc.auth.{Bar, Foo, TestPredicate1}
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -32,7 +32,7 @@ class AuthorisedFunctionsSpec extends WordSpec with ScalaFutures {
 
   private trait Setup extends AuthorisedFunctions {
 
-    implicit lazy val hc = HeaderCarrier()
+    implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
     def success: Any = ()
 
@@ -47,22 +47,22 @@ class AuthorisedFunctionsSpec extends WordSpec with ScalaFutures {
 
   "AuthorisedFunction" should {
     "execute the supplied body when authorisation succeeds and no predicates supplied" in new Setup {
-      def testFunction() = authorised() {
+      def testFunction(): Future[String] = authorised() {
         Future("works")
       }
 
-      val result = testFunction()
+      val result: Future[String] = testFunction()
       whenReady(result) {
         str => str shouldBe "works"
       }
     }
 
     "execute the supplied body when authorisation succeeds for a supplied predicate" in new Setup {
-      def testFunction() = authorised(TestPredicate1("someValue")) {
+      def testFunction(): Future[String] = authorised(TestPredicate1("someValue")) {
         Future("works")
       }
 
-      val result = testFunction()
+      val result: Future[String] = testFunction()
       whenReady(result) {
         str => str shouldBe "works"
       }
@@ -72,11 +72,11 @@ class AuthorisedFunctionsSpec extends WordSpec with ScalaFutures {
 
       override def exception = Some(new MissingBearerToken)
 
-      def testFunction() = authorised(TestPredicate1("someValue")) {
+      def testFunction(): Future[String] = authorised(TestPredicate1("someValue")) {
         Future("works")
       }
 
-      val result = testFunction()
+      val result: Future[String] = testFunction()
       whenReady(result.failed) {
         e => e shouldBe a[MissingBearerToken]
       }
@@ -92,12 +92,12 @@ class AuthorisedFunctionsSpec extends WordSpec with ScalaFutures {
     "execute the supplied body with retrieved object when authorisation succeeds and no predicates supplied" in new Setup {
       override val success = Foo("foo message")
 
-      def testFunction() = authorised.retrieve(fooRetrieval) {
+      def testFunction(): Future[Foo] = authorised().retrieve(fooRetrieval) {
         implicit foo =>
           Future(foo)
       }
 
-      val result = testFunction()
+      val result: Future[Foo] = testFunction()
       whenReady(result) {
         _ shouldBe Foo("foo message")
       }
@@ -106,12 +106,12 @@ class AuthorisedFunctionsSpec extends WordSpec with ScalaFutures {
     "execute the supplied body with retrieved object when authorisation succeeds and predicates supplied" in new Setup {
       override val success = Foo("foo message")
 
-      def testFunction() = authorised(simplePredicate).retrieve(fooRetrieval) {
+      def testFunction(): Future[Foo] = authorised(simplePredicate).retrieve(fooRetrieval) {
         implicit foo =>
           Future(foo)
       }
 
-      val result = testFunction()
+      val result: Future[Foo] = testFunction()
       whenReady(result) {
         _ shouldBe Foo("foo message")
       }
@@ -120,16 +120,15 @@ class AuthorisedFunctionsSpec extends WordSpec with ScalaFutures {
     "execute the supplied body with retrieved objects when authorisation succeeds and predicates supplied" in new Setup {
       override def success = new ~(Foo("foo message"), Bar("bar message", 123))
 
-      def testFunction() = authorised(simplePredicate).retrieve(fooRetrieval and barRetrieval) {
+      def testFunction(): Future[(Foo, Bar)] = authorised(simplePredicate).retrieve(fooRetrieval and barRetrieval) {
         case foo ~ bar => Future((foo, bar))
       }
 
-      val result = testFunction()
+      val result: Future[(Foo, Bar)] = testFunction()
       whenReady(result) {
-        case (foo, bar) => {
+        case (foo, bar) =>
           foo shouldBe Foo("foo message")
           bar shouldBe Bar("bar message", 123)
-        }
       }
     }
 
@@ -137,12 +136,12 @@ class AuthorisedFunctionsSpec extends WordSpec with ScalaFutures {
 
       override def exception = Some(new MissingBearerToken)
 
-      def testFunction() = authorised(simplePredicate).retrieve(fooRetrieval) {
+      def testFunction(): Future[Foo] = authorised(simplePredicate).retrieve(fooRetrieval) {
         implicit foo =>
           Future(foo)
       }
 
-      val result = testFunction()
+      val result: Future[Foo] = testFunction()
       whenReady(result.failed) {
         e => e shouldBe a[MissingBearerToken]
       }

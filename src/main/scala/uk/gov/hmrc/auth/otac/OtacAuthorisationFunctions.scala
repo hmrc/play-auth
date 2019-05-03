@@ -17,10 +17,10 @@
 package uk.gov.hmrc.auth.otac
 
 import play.api.mvc.Request
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait OtacAuthorisationFunctions {
   def authConnector: OtacAuthConnector
@@ -28,8 +28,8 @@ trait OtacAuthorisationFunctions {
   def withVerifiedPasscode[T](serviceName: String)(body: => Future[T])
                              (implicit request: Request[_], headerCarrier: HeaderCarrier): Future[T] = {
     authConnector.authorise(serviceName, headerCarrier, request.session).flatMap {
-        case Authorised => body
-        case otherResult => Future.failed(OtacFailureThrowable(otherResult))
-      }
+      case Authorised => body
+      case otherResult => Future.failed(OtacFailureThrowable(otherResult))
+    }
   }
 }

@@ -23,9 +23,9 @@ import net.ceedubs.ficus.readers.ArbitraryTypeReader._
 
 case class AuthConfig(patterns: Seq[String], predicates: Seq[Config]) {
 
-  val pathMatchers = patterns.map(PathMatcher)
+  val pathMatchers: Seq[PathMatcher] = patterns.map(PathMatcher)
 
-  val predicatesAsJson = predicates
+  val predicatesAsJson: String = predicates
     .map(_.root.render(ConfigRenderOptions.concise))
     .mkString("[", ",", "]")
 

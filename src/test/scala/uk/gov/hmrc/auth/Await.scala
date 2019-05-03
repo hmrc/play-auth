@@ -19,9 +19,10 @@ package uk.gov.hmrc.auth
 import scala.concurrent.{Await, Future}
 
 trait Await {
+
   import scala.concurrent.duration._
 
-  implicit val defaultTimeout = 5 seconds
+  implicit val defaultTimeout: FiniteDuration = 5 seconds
 
-  def await[A](future: Future[A])(implicit timeout: Duration) = Await.result(future, timeout)
+  def await[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
 }

@@ -19,20 +19,19 @@ package uk.gov.hmrc.auth.filter
 
 trait ConfigSetup {
 
-
-  val enrol1EnrolmentConfig =
+  val enrol1EnrolmentConfig: String =
     """[{
       |  enrolment = "ENROL-1"
       |  identifiers = [{ key = "BOO", value = "$taxId" }]
       |}]""".stripMargin
 
-  val enrol2EnrolmentConfig =
+  val enrol2EnrolmentConfig: String =
     """[{
       |  enrolment = "ENROL-2"
       |  identifiers = [{ key = "AHH", value = "$taxId" }]
       |}]""".stripMargin
 
-  val fullConfig =
+  val fullConfig: String =
     s"""
        |controllers {
        |
@@ -80,6 +79,5 @@ trait ConfigSetup {
        |  }
        |
      |}""".stripMargin
-
 
 }
