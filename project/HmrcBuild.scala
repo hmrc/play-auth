@@ -1,7 +1,7 @@
 import play.core.PlayVersion
 import play.sbt.PlayImport._
 import sbt.Keys._
-import sbt.{Def, _}
+import sbt._
 import uk.gov.hmrc.versioning.SbtGitVersioning
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 import uk.gov.hmrc.{SbtArtifactory, SbtAutoBuildPlugin}
