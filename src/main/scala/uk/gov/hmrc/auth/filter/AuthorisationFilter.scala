@@ -22,9 +22,10 @@ import play.api.routing.Router.Tags
 import uk.gov.hmrc.auth.core.authorise.RawJsonPredicate
 import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisationException}
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.HeaderCarrierConverter
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
@@ -34,8 +35,8 @@ trait AuthorisationFilter extends Filter {
 
   def connector: AuthConnector
 
-  def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
-    implicit val hc = HeaderCarrier.fromHeadersAndSession(rh.headers)
+  def apply(next: RequestHeader => Future[Result])(rh: RequestHeader): Future[Result] = {
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(rh.headers)
 
     def applyPathMatcher(pathMatchers: Seq[PathMatcher]): Option[Map[String, String]] =
       if (pathMatchers.isEmpty) None

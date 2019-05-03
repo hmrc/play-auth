@@ -24,9 +24,9 @@ import scala.util.{Failure, Success, Try}
 
 sealed abstract class ConfidenceLevel(val level: Int) extends Ordered[ConfidenceLevel] {
 
-  def compare(that: ConfidenceLevel) = this.level.compare(that.level)
+  def compare(that: ConfidenceLevel): Int = this.level.compare(that.level)
 
-  override val toString = level.toString
+  override val toString: String = level.toString
 
 }
 
@@ -56,7 +56,7 @@ object ConfidenceLevel {
 
   private val mapping = Mappings.mapTry[Int, ConfidenceLevel](fromInt, _.level)
 
-  implicit val jsonFormat = mapping.jsonFormat
+  implicit val jsonFormat: Format[ConfidenceLevel] = mapping.jsonFormat
 
 }
 
@@ -73,12 +73,11 @@ object CredentialStrength {
 
 case class EnrolmentIdentifier(key: String, value: String)
 
-case class Enrolment(
-                      key: String,
-                      identifiers: Seq[EnrolmentIdentifier],
-                      state: String,
-                      confidenceLevel: ConfidenceLevel,
-                      delegatedAuthRule: Option[String] = None) extends Predicate {
+case class Enrolment(key: String,
+                     identifiers: Seq[EnrolmentIdentifier],
+                     state: String,
+                     confidenceLevel: ConfidenceLevel,
+                     delegatedAuthRule: Option[String] = None) extends Predicate {
 
   def getIdentifier(name: String): Option[EnrolmentIdentifier] = identifiers.find {
     _.key.equalsIgnoreCase(name)
@@ -97,8 +96,8 @@ case class Enrolment(
 }
 
 object Enrolment {
-  implicit val idFormat = Json.format[EnrolmentIdentifier]
-  implicit val writes = Json.writes[Enrolment].transform { json: JsValue =>
+  implicit val idFormat: OFormat[EnrolmentIdentifier] = Json.format[EnrolmentIdentifier]
+  implicit val writes: OWrites[Enrolment] = Json.writes[Enrolment].transform { json: JsValue =>
     json match {
       case JsObject(props) => JsObject(props + ("enrolment" -> props("key")) - "key")
     }
@@ -141,7 +140,7 @@ object AffinityGroup {
 
   private val mapping = Mappings.mapEnum[AffinityGroup](Individual, Organisation, Agent)
 
-  implicit val jsonFormat = mapping.jsonFormat
+  implicit val jsonFormat: Format[AffinityGroup] = mapping.jsonFormat
 }
 
 trait CredentialRole extends Predicate {
@@ -158,5 +157,5 @@ object CredentialRole {
 
   private val mapping = Mappings.mapEnum[CredentialRole](Admin, Assistant, User)
 
-  implicit val jsonFormat = mapping.jsonFormat
+  implicit val jsonFormat: Format[CredentialRole] = mapping.jsonFormat
 }

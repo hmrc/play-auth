@@ -20,8 +20,7 @@ import play.api.mvc.Result
 import play.api.mvc.Results._
 import play.api.{Configuration, Environment, Mode}
 import uk.gov.hmrc.auth.core.authorise.ConfidenceLevel
-import uk.gov.hmrc.play.http.SessionKeys
-
+import uk.gov.hmrc.http.SessionKeys
 
 trait Redirects {
 

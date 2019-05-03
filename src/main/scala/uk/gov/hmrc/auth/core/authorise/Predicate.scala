@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.auth.core.authorise
 
-import play.api.libs.json.{JsArray, JsValue, Json}
+import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 
 /**
   * Defines a boolean check against auth properties
@@ -48,8 +48,8 @@ trait Predicate {
 
 case class CompositePredicate(predicateA: Predicate, predicateB: Predicate) extends Predicate {
 
-  val toJson = {
-    def extractPredicates(predicate: Predicate) = predicate match {
+  val toJson: JsArray = {
+    def extractPredicates(predicate: Predicate): Seq[Predicate] = predicate match {
       case CompositePredicate(p1, p2) => Seq(p1, p2) // optimization to avoid unnecessary nesting
       case EmptyPredicate => Seq()
       case other => Seq(other)
@@ -63,8 +63,8 @@ case class CompositePredicate(predicateA: Predicate, predicateB: Predicate) exte
 
 case class AlternatePredicate(predicateA: Predicate, predicateB: Predicate) extends Predicate {
 
-  val toJson = {
-    def extractPredicates(predicate: Predicate) = predicate match {
+  val toJson: JsObject = {
+    def extractPredicates(predicate: Predicate): Seq[Predicate] = predicate match {
       case AlternatePredicate(p1, p2) => Seq(p1, p2) // optimization to avoid unnecessary nesting
       case EmptyPredicate => Seq()
       case other => Seq(other)

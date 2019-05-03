@@ -108,7 +108,6 @@ object Mappings {
 
 class Mapping[A, B](toDomain: A => Either[String, B], fromDomain: B => A) {
 
-
   def jsonReads(implicit base: Reads[A]): Reads[B] = Reads[B] {
     _.validate[A] flatMap {
       encoded => toDomain(encoded).fold[JsResult[B]](JsError(_), JsSuccess(_))
@@ -126,18 +125,17 @@ class Mapping[A, B](toDomain: A => Either[String, B], fromDomain: B => A) {
 
   def pathBindable(implicit base: PathBindable[A]): PathBindable[B] = new PathBindable[B] {
 
-    def bind(key: String, value: String) = bindToDomain(base.bind(key, value))
+    def bind(key: String, value: String): Either[String, B] = bindToDomain(base.bind(key, value))
 
     def unbind(key: String, value: B): String = base.unbind(key, fromDomain(value))
   }
 
   def queryStringBindable(implicit base: QueryStringBindable[A]): QueryStringBindable[B] = new QueryStringBindable[B] {
 
-    def bind(key: String, params: Map[String, Seq[String]]) = base.bind(key, params).map(bindToDomain)
+    def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, B]] = base.bind(key, params).map(bindToDomain)
 
-    def unbind(key: String, value: B) = base.unbind(key, fromDomain(value))
+    def unbind(key: String, value: B): String = base.unbind(key, fromDomain(value))
   }
-
 
 }
 
@@ -159,7 +157,5 @@ class Enum[B](enumName: String, val elements: Seq[B]) {
 }
 
 class EnumMapping[B](val enum: Enum[B]) extends Mapping[String, B](enum.toDomain, enum.fromDomain) {
-
   def fromString(name: String): Option[B] = enum.fromName(name)
-
 }

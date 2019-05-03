@@ -20,10 +20,11 @@ import play.api.http.{HeaderNames => PlayHeaderNames}
 import play.api.libs.json._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
-import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpPost, Upstream4xxResponse}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.matching.Regex
 
 trait AuthConnector {
 
@@ -44,7 +45,7 @@ trait PlayAuthConnector extends AuthConnector {
       case arr: JsArray => arr
       case other => Json.arr(other)
     }
-    val json = Json.obj(
+    val json: JsValue = Json.obj(
       "authorise" -> predicateJson,
       "retrieve" -> JsArray(retrieval.propertyNames.map(JsString))
     )
@@ -62,7 +63,7 @@ trait PlayAuthConnector extends AuthConnector {
 
 object AuthenticateHeaderParser {
 
-  val regex = """^MDTP detail="(.+)"$""".r
+  val regex: Regex = """^MDTP detail="(.+)"$""".r
 
   def parse(headers: Map[String, Seq[String]]): AuthorisationException = {
     headers.get(PlayHeaderNames.WWW_AUTHENTICATE).flatMap(_.headOption) match {

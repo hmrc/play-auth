@@ -16,17 +16,15 @@
 
 package uk.gov.hmrc.auth.filter
 
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{Config, ConfigFactory}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{Matchers, WordSpec}
 
 
 class FilterConfigSpec extends WordSpec with ScalaFutures with Matchers with ConfigSetup {
 
-
-  val config = ConfigFactory.parseString(fullConfig).getConfig("controllers")
+  val config: Config = ConfigFactory.parseString(fullConfig).getConfig("controllers")
   val filterConfig = FilterConfig(config)
-
 
   "FilterConfig" should {
 
@@ -56,26 +54,18 @@ class FilterConfigSpec extends WordSpec with ScalaFutures with Matchers with Con
     }
 
     "return an empty sequence for controllers without configuration" in {
-
       filterConfig.getConfigForController("duh.UnknownController") should have size 0
-
     }
 
     "return an empty sequence for controllers without a authorisedBy property" in {
-
       filterConfig.getConfigForController("baz.BazController") should have size 0
-
     }
 
     "throw an exception for controllers with an authorisedBy entry pointing to a non-existing configuration" in {
-
       a[RuntimeException] shouldBe thrownBy {
         filterConfig.getConfigForController("bim.BimController") should have size 0
       }
-
     }
-
   }
-
 
 }

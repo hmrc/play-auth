@@ -19,9 +19,9 @@ package uk.gov.hmrc.auth.core
 
 import uk.gov.hmrc.auth.core.authorise.{EmptyPredicate, Predicate}
 import uk.gov.hmrc.auth.core.retrieve.{EmptyRetrieval, Retrieval}
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.http.HeaderCarrier
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait AuthorisedFunctions {
@@ -50,4 +50,5 @@ trait AuthorisedFunctions {
       authConnector.authorise(predicate, retrieval).flatMap(body)
 
   }
+
 }

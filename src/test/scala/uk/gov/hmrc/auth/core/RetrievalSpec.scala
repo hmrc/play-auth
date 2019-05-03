@@ -56,7 +56,6 @@ class RetrievalSpec extends WordSpec with ScalaFutures {
 
   "CompositeRetrieval" should {
 
-
     "contain all propertyNames and Reads from the supplied two SimpleRetrievals" in {
       val simpleRetrieval1 = SimpleRetrieval("fooProperty", Foo.reads)
       val simpleRetrieval2 = SimpleRetrieval("barProperty", Bar.reads)
